@@ -25,6 +25,10 @@ function grisu(v::AbstractFloat, mode, requested_digits)
         end
         @grisu_ccall v mode requested_digits
         return Base.Grisu.LEN[1], Base.Grisu.POINT[1], Base.Grisu.NEG, Base.Grisu.DIGITS
+    elseif  VERSION > v"0.5-dev"
+        buffer = Array(UInt8, 309+17)
+        ret = Base.Grisu.grisu(v, mode, requested_digits, buffer)
+        return (ret..., buffer)
     else
         return Base.Grisu.grisu(v, mode, requested_digits)
     end
